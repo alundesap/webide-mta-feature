@@ -1,0 +1,18 @@
+{
+  "name": "sap.webide.mta.approuter",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node node_modules/@sap/approuter/approuter.js",
+    "postinstall": "npm run install-dev-dependencies && node ./scripts/bundle.js",
+    "install-dev-dependencies": "npm install --only=dev --ignore-scripts"
+  },
+  "config": {
+    "flavor": "none"
+  },
+  "dependencies": {
+    "@sap/approuter": "2.7.0"
+  },
+  "devDependencies": {
+    "fs-extra": "4.0.0"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "sap.mta.wing.provider.service.build.MtaBuildTaskProvider",
+  "description": "",
+  "methods": {
+    "executeBuild": {
+      "description": "Executes a build using the shell command on Che 6 via an execution agent running in the user workspace."
+    }
+  }
+}

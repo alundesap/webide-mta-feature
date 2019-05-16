@@ -1,0 +1,14 @@
+{
+	"authenticationMethod": "none",
+	"cacheControl": [
+        {
+            "path": "/client/package.json",
+            "maxAge": 0
+        },
+        {
+            "path": "/client/",
+            "directive": "public",
+            "maxAge": 31536000
+        }
+    ]
+}

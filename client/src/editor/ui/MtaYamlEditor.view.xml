@@ -1,0 +1,15 @@
+<mvc:View controllerName="sap.watt.saptoolsets.common.mtayaml.ui.MtaYamlEditor" xmlns:mvc="sap.ui.core.mvc"
+	xmlns:layout="sap.ui.layout" xmlns="sap.m">
+	<layout:Grid class="sapUiSizeCompact">
+		<layout:content>
+			<IconTabBar id="mtaYamlIconTabBar" class="sapUiNoContentPadding mtayamlTabs" stretchContentHeight="true" expandable="false" backgroundDesign="Transparent">
+				<layoutData>
+					<layout:GridData span="L12 M12 S12"/>
+				</layoutData>
+			</IconTabBar>
+		</layout:content>
+		<layout:layoutData>
+			<layout:GridData span="L12 M12 S12"/>
+		</layout:layoutData>
+	</layout:Grid>
+</mvc:View>

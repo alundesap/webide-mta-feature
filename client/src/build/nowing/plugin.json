@@ -1,0 +1,25 @@
+{
+  "name": "sap.watt.mta.build.nowing.provider",
+  "description": "A plugin providing commands used for an MTA project on the NEO/XS environment.",
+  "isAvailable": {
+    "not": {
+      "toggle": "wing"
+    }
+  },
+  "requires": {
+    "services": [
+      "builder",
+      "commonDiBuild"
+    ]
+  },
+  "configures": {
+    "services": {
+      "builder:projectTypes": [
+        {
+          "projectTypeId": "mta",
+          "buildService": "@commonDiBuild"
+        }
+      ]
+    }
+  }
+}

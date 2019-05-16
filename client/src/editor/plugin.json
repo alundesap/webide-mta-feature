@@ -1,0 +1,92 @@
+{
+	"name": "sap.watt.saptoolsets.common.mtayaml",
+	"description": "Mta yaml multi editor",
+	"i18n": "sap.watt.saptoolsets.common.mtayaml/i18n/i18n",
+
+	"requires": {
+		"services": [
+			"editor",
+			"resource",
+			"aceeditor",
+			"multiEditorFactory",
+			"aceEditorFactory",
+			"beautifierProcessor",
+			"contenttypemanager"
+		]
+	},
+
+	"provides": {
+		"services": {
+			"mtaaceeditorinstance": {
+				"implements": "sap.watt.common.plugin.aceeditor.service.Editor",
+				"factory": "aceEditorFactory"
+			},
+			"mtayamleditor": {
+				"implements": "sap.watt.saptoolsets.common.mtayaml.service.MtaYaml",
+				"module": "sap.watt.saptoolsets.common.mtayaml/service/MtaYaml"
+			},
+			"mtayamlMulti": {
+				"implements": "sap.watt.common.plugin.multieditor.service.MultiEditor",
+				"factory": "multiEditorFactory"
+			}
+		},
+		"interfaces": {
+			"sap.watt.saptoolsets.common.mtayaml.service.MtaYaml": "sap.watt.saptoolsets.common.mtayaml/service/MtaYaml"
+		}
+	},
+
+	"configures": {
+		"services": {
+			"mtayamleditor:styles": [{
+				"uri": "sap.watt.saptoolsets.common.mtayaml/css/MtaYaml.css"
+			}],
+			"mtayamleditor:tabs": [{
+				"tabName": "{i18n>MtaYaml_Modules}",
+				"viewName": "sap.watt.saptoolsets.common.mtayaml.ui.MtaYamlModulesTab"
+			},{
+				"tabName": "{i18n>MtaYaml_Resources}",
+				"viewName": "sap.watt.saptoolsets.common.mtayaml.ui.MtaYamlResourcesTab"
+			},{
+				"tabName": "{i18n>MtaYaml_General}",
+				"viewName": "sap.watt.saptoolsets.common.mtayaml.ui.MtaYamlGeneralTab"
+			}],
+			"mtayamlMulti:editors": [{
+				"name": "{i18n>MtaYaml_Editor}",
+				"defaultName": "{i18n>MtaYaml_Editor_Name}",
+				"service": "@mtayamleditor"
+			}, {
+				"name": "{i18n>MtaYaml_Code_Editor}",
+				"service": "@mtaaceeditorinstance"
+			}],
+			"mtayamlMulti:saveLastTab": true,
+			"contenttypemanager:contentTypes": [{
+				"id": "mta.yaml",
+				"name": "MTA Application Descriptor",
+				"description": "MTA Application Desc",
+				"baseTypeId": "sap.watt.toolsets.yaml.contentType.yaml",
+				"fileNames": ["mta.yaml"]
+			}],
+			"editor:editors": [{
+				"contentType": "mta.yaml",
+				"service": "@mtayamlMulti",
+				"name": "{i18n>MtaYaml_Editor}",
+				"defaultName": "{i18n>MtaYaml_Editor_Name}",
+				"id": "yamlEditor"
+			}],
+			"editor:defaultEditors": [{
+				"contentTypeId": "mta.yaml",
+				"editorId": "yamlEditor"
+			}],
+			"mtaaceeditorinstance:editorGutterContextMenu": [{
+				"extension": "yaml",
+				"menuGroup": "yamlGutterContextMenu"
+			}],
+			"mtaaceeditorinstance:modes": [{
+				"type":"yaml",
+				"description":"YAML",
+				"extension":"yaml"
+			}]
+		}
+	}
+
+}

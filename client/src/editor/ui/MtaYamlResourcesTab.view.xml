@@ -1,0 +1,162 @@
+<mvc:View controllerName="sap.watt.saptoolsets.common.mtayaml.ui.MtaYamlResourcesTab" xmlns:mvc="sap.ui.core.mvc"
+	xmlns:layout="sap.ui.layout" xmlns="sap.m" xmlns:common="sap.ui.commons" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" xmlns:table="sap.ui.table" height="100%" displayBlock="true">
+	<SplitContainer id="ResourcesSplitContainer" initialDetail="ResourcesDetailPage" initialMaster="ResourcesMasterPage" mode="StretchCompressMode">
+		<masterPages>
+			<Page id="ResourcesMasterPage" title="" icon="sap-icon://action" showHeader="false" class="sapUiStdPage">
+				<content>
+					<List id="MtaResourcesList" width="100%" mode="SingleSelectMaster" items="{/resources}" selectionChange="onResourceSelectionChange"
+						class="sapWattMListWithBorder" showSeparators="None">
+						<headerToolbar>
+							<Toolbar>
+								<content>
+									<ToolbarSpacer/>
+									<Button id="ResourcesAddResource" class="sapWattYamlTableToolbarButton" icon="sap-icon://add" press="onPressAddResources"/>
+									<Button id="ResourcesRemoveResource" class="sapWattYamlTableToolbarButton" icon="sap-icon://delete" press="onPressRemoveResources"
+										enabled="{path:'/resources', formatter:'.isResourcesListEmpty'}"/>
+								</content>
+							</Toolbar>
+						</headerToolbar>
+						<InputListItem>
+							<Input name="Name" value="{name}" liveChange="keyCrossValidation" width="100%" textAlign="Begin" fieldWidth="100%"/>
+						</InputListItem>
+						<layoutData>
+							<layout:GridData span="L9 M9 S9"/>
+						</layoutData>
+					</List>
+				</content>
+			</Page>
+		</masterPages>
+		<detailPages>
+			<Page id="ResourcesDetailPage" backgroundDesign="Transparent" showHeader="false" class="sapUiStdPage">
+				<content>
+					<ObjectHeader title="{name}" introActive="false" titleActive="false" id="modulesDetailHeader" icon=""/>
+					<layout:Grid>
+						<layout:layoutData>
+							<layout:GridData span="L6 M6 S6"/>
+						</layout:layoutData>
+						<Label text="{i18n>MtaYaml_Resources_Type}">
+							<layoutData>
+								<layout:GridData span="L1 M1 S4"/>
+							</layoutData>
+						</Label>
+						<Input id="mtaYamlResourcesBasicInfoTypeInput" type="Text" showValueHelp="true" value="{type}"
+							valueHelpRequest="onValueHelpRequest" suggestionItems="{ItemsModel>/aResourceTypes}" 
+							showSuggestion="true" change="filterParametersList" width="100%">
+							<suggestionItems>
+								<core:Item key="{ItemsModel>name}" text="{ItemsModel>name}"></core:Item>
+							</suggestionItems>
+							<layoutData>
+								<layout:GridData span="L4 M4 S8"/>
+							</layoutData>
+						</Input>
+						<Label text="{i18n>MtaYaml_Resources_Desc}">
+							<layoutData>
+								<layout:GridData span="L1 M1 S4"/>
+							</layoutData>
+						</Label>
+						<TextArea id="mtaYamlResourcesBasicInfoDescriptionTextArea" value="{description}" valueLiveUpdate="true" width="100%">
+							<layoutData>
+								<layout:GridData span="L4 M4 S8"/>
+							</layoutData>
+						</TextArea>
+					</layout:Grid>
+					<!--Parameters-->
+					<Panel id="mtaYamlResourcesParametersPanel" expandable="true" expanded="true" headerText="{i18n>MtaYaml_Resources_Parameters}"
+						backgroundDesign="Transparent" width="100%">
+						<content>
+							<layout:Grid vSpacing="0">
+								<table:Table id="MtaResourcesParametersTable" selectionMode="Single" selectionBehavior="RowOnly" visibleRowCount="3" app:location="property">
+									<table:toolbar>
+										<Toolbar>
+											<content>
+												<!--<Title id="ParametersTitle" text="{i18n>MtaYaml_Resources_Parameters}" titleStyle="H5"/>-->
+												<ToolbarSpacer/>
+												<Button id="ResourcesAddParameters" class="sapWattYamlTableToolbarButton" icon="sap-icon://add" tooltip="{i18n>MtaYaml_Add}"
+													press="onTableAddPress"/>
+												<Button id="ResourcesRemoveParameters" class="sapWattYamlTableToolbarButton" icon="sap-icon://delete" tooltip="{i18n>MtaYaml_Remove}"
+													press="onTableRemovePress" enabled="{=!!${parameters}}"/>
+											</content>
+										</Toolbar>
+									</table:toolbar>
+									<table:columns>
+										<table:Column>
+											<Label text="{i18n>MtaYaml_Resources_Key}"/>
+											<table:template>
+											<Input id="mtaYamlResourcesParametersKeyInput" type="Text" showValueHelp="true" value="{key}"
+												valueHelpRequest="onValueHelpRequest" suggestionItems="{ItemsModel>/aResourceParameters}" 
+												valueState="{path: 'key', formatter:'.valueStateFormatterParameters'}" showSuggestion="true" width="100%">
+												<!--change="keyValidation"-->
+												<suggestionItems>
+													<core:Item key="{ItemsModel>name}" text="{ItemsModel>name}"></core:Item>
+												</suggestionItems>
+													<layoutData>
+														<layout:GridData span="L4 M4 S8"/>
+													</layoutData>
+												</Input>
+											</table:template>
+										</table:Column>
+										<table:Column>
+											<Label text="{i18n>MtaYaml_Resources_Value}"/>
+											<table:template>
+												<Input id="mtaYamlResourcesParametersValueInput" editable="{editable}" value="{displayedValue}" valueLiveUpdate="true"/>
+											</table:template>
+										</table:Column>
+									</table:columns>
+									<table:layoutData>
+										<layout:GridData span="L12 M12 S12"/>
+									</table:layoutData>
+								</table:Table>
+							</layout:Grid>
+						</content>
+						<layoutData>
+							<layout:GridData span="L12 M12 S12"/>
+						</layoutData>
+					</Panel>
+					<!--Properties-->
+					<Panel id="mtaYamlResourcesPropertiesPanel" expandable="true" expanded="true" headerText="{i18n>MtaYaml_Resources_Properties}"
+						backgroundDesign="Transparent" width="100%">
+						<content>
+							<layout:Grid vSpacing="0">
+								<table:Table id="MtaResourcesPropertiesTable" selectionMode="Single" selectionBehavior="RowOnly" visibleRowCount="3" app:location="property">
+									<table:toolbar>
+										<Toolbar>
+											<content>
+												<!--<Title id="PropertiesTitle" text="{i18n>MtaYaml_Resources_Properties}" titleStyle="H5"/>-->
+												<ToolbarSpacer/>
+												<Button id="ResourcesAddProperties" class="sapWattYamlTableToolbarButton" icon="sap-icon://add" tooltip="{i18n>MtaYaml_Add}"
+													press="onTableAddPress"/>
+												<Button id="ResourcesRemoveProperties" class="sapWattYamlTableToolbarButton" icon="sap-icon://delete" tooltip="{i18n>MtaYaml_Remove}"
+													press="onTableRemovePress" enabled="{=!!${properties}}"/>
+											</content>
+										</Toolbar>
+									</table:toolbar>
+									<table:columns>
+										<table:Column>
+											<Label text="{i18n>MtaYaml_Resources_Key}"/>
+											<table:template>
+												<Input id="MtaResourcesPropertiesKeyInput" valueState="{path: 'key', formatter:'.valueStateFormatterProperties'}" value="{key}"/>
+											</table:template>
+										</table:Column>
+										<table:Column>
+											<Label text="{i18n>MtaYaml_Resources_Value}"/>
+											<table:template>
+												<Input id="MtaResourcesPropertiesValueInput" editable="{editable}" value="{displayedValue}" valueLiveUpdate="true"/>
+											</table:template>
+										</table:Column>
+									</table:columns>
+									<table:layoutData>
+										<layout:GridData span="L12 M12 S12"/>
+									</table:layoutData>
+								</table:Table>
+							</layout:Grid>
+						</content>
+						<layoutData>
+							<layout:GridData span="L12 M12 S12"/>
+						</layoutData>
+					</Panel>
+				</content>
+			</Page>
+		</detailPages>
+	</SplitContainer>
+</mvc:View>

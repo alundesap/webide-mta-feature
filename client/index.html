@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script src="node_modules/@sap-webide/webide-client-tools/resources/local_env/webide_starter.js"></script>
+<script>
+    "use strict";
+
+    var myFeatureConfig = _.cloneDeep(DEFAULT_FEATURE_CONFIG);
+    myFeatureConfig.bundledFeatures["sap.webide.mta.client"] = "file:../../../../../package.json";
+    let diLocalEnvJson = loadResourceSync("resources/di_local_env.json","json");
+    let options = {
+        extra_url_params: {
+            username: "default_user",
+            password: "passWord120"
+        },
+        backend: "DI",
+        env: diLocalEnvJson,
+        featureConfig: myFeatureConfig
+        //dev_mode: true
+    };
+
+        startWebIDE(options);
+</script>
+
+
+</body>
+</html>

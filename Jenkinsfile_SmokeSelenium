@@ -1,0 +1,21 @@
+@Library(['features-pipeline-lib', 'piper-lib', 'piper-lib-os@857bd2794a29f8a0caa2ba3910a4ab72d042e36d']) _
+
+try {
+    stage("Run Selenium Tests") {
+            seleniumPodTemplate {
+                checkout scm
+                sh """
+                   HOME=${pwd()}
+                   cd client
+                   npm install
+                   npm run test:smoke:it
+                """
+            }
+        }
+} catch(Exception error) {
+    def githubRepoName = globalPipelineEnvironment.getConfigProperty('githubRepoName');
+    mail body: """The smoke test for """+githubRepoName+""" is failing and requires your attention.
+    Regards,
+    FMS JaaS Server""".stripIndent().trim(), subject: githubRepoName+' smoke test has failed!', to: 'DL_58FDEC017BCF846942000252@exchange.sap.corp'
+    throw error;
+}

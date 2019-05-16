@@ -1,0 +1,200 @@
+@Library(['features-pipeline-lib', 'piper-lib', 'piper-lib-os@857bd2794a29f8a0caa2ba3910a4ab72d042e36d']) _
+
+WEBIDE_HOST_ON_FACTORY_ACCOUNT="https://webidecp-mubgerg15c.dispatcher.hana.ondemand.com";
+WEBIDE_HOST_ON_CANARY_ACCOUNT ="https://dicidev-xg98ih1clz.dispatcher.int.sap.hana.ondemand.com";
+
+def buildFeatureByTarget(buildTarget) {
+    def extensionFile;
+    if (buildTarget == "NEO") {
+        extensionFile = "neo-mtaext.yaml"
+    } else if (buildTarget == "XSA") {
+        extensionFile = "xsa-mtaext.yaml"
+    } else {
+        throw new RuntimeException ("Not supported build target (" + buildTarget + ")");
+    }
+
+    def version_extension
+    def commitId
+    node() {
+        checkout scm
+        def piperUtils = new com.sap.icd.jenkins.Utils();
+        commitId = piperUtils.getGitCommitId();
+        def utils = new com.sap.devx.featurelib.Utils();
+        version_extension = new Date().format("YYYYMMddHHmmss")
+        def githubOrgName = globalPipelineEnvironment.getConfigProperty('githubOrgName');
+        def githubRepoName = globalPipelineEnvironment.getConfigProperty('githubRepoName');
+        setupPipelineEnvironment script: this, githubOrg: githubOrgName, githubRepo: githubRepoName, gitBranch: env.BRANCH_NAME
+
+        def xMakeServerName = globalPipelineEnvironment.getConfigProperty('xMakeServer');
+        def jobNAme = globalPipelineEnvironment.getConfigProperty('xMakeJobName');
+        triggerXMakeRemoteJob(
+            xMakeServer: xMakeServerName,
+            xMakeJobName: jobNAme,
+            xMakeJobParameters: "MODE=stage_and_promote\nTREEISH=${commitId}\nVERSION_EXTENSION=${version_extension}-${buildTarget}\nBUILD_OPTIONS=--buildplugin-option mta-extension=${extensionFile} --buildplugin-option mtar-build-target=${buildTarget}"
+        )
+    }
+}
+
+try {
+    stage("Run Voter") {
+        node {
+            checkout scm
+            load "Jenkinsfile_Voter"
+        }
+    }
+
+    stage("Sonar Scan") {
+        node {
+            checkout scm
+            def version = sh returnStdout: true, script: 'awk -F\'\\"\' \'/\\"version\\": \\".+\\"/{ print $4; exit; }\' client/package.json'
+            unstash 'coverage'
+            executeSonarScan script: this, projectVersion: version
+        }
+    }
+
+    stage("Checkmarx Scan") {
+        node {
+            checkout scm
+            def cxProjectName = globalPipelineEnvironment.getConfigProperty('checkmarxProject')
+            def cxGroupId = globalPipelineEnvironment.getConfigProperty('checkmarxGroupId')
+            def preset = globalPipelineEnvironment.getConfigProperty('preset')
+            executeCheckmarxScan script: this, checkmarxProject: cxProjectName, checkmarxGroupId: cxGroupId, preset: preset
+        }
+    }
+
+    stage("IPScan and PPMS") {
+        node {
+            checkout scm
+            def packageJson = readJSON file: 'client/package.json'
+            measureDuration(script: this, measurementName: 'ppmscheck_duration') {
+                executePPMSComplianceCheck script: this, scanType: 'whitesource',
+                        whitesourceUserTokenCredentialsId: 'whitesourceUserToken',
+                        whitesourceProjectNames:"${packageJson.name} - ${packageJson.version}"
+            }
+        }
+    }
+
+
+    stage("Deploy to Test Accounts") {
+        devxPodTemplate() {
+            checkout scm
+            def githubOrgName = globalPipelineEnvironment.getConfigProperty('githubOrgName');
+            def githubRepoName = globalPipelineEnvironment.getConfigProperty('githubRepoName');
+            setupPipelineEnvironment script: this, githubOrg: githubOrgName, githubRepo: githubRepoName, gitBranch: env.BRANCH_NAME
+            def solutionName = globalPipelineEnvironment.getConfigProperty('solutionName');
+            def solutionMtar = solutionName + ".mtar"
+            def solutionDestinationMtar = "destination/" + solutionName + ".destination.mtar"
+            def credId = globalPipelineEnvironment.getConfigProperty('credentialsId')
+            def buildFlavour = globalPipelineEnvironment.getConfigProperty('buildFlavour')
+            def canaryTestHost = globalPipelineEnvironment.getConfigProperty('canaryTestHost')
+            def canaryTestAccount = globalPipelineEnvironment.getConfigProperty('canaryTestAccount')
+            def factoryTestHost = globalPipelineEnvironment.getConfigProperty('factoryTestHost')
+            def factoryTestAccount = globalPipelineEnvironment.getConfigProperty('factoryTestAccount')
+
+            dir('destination') {
+                executeMtaBuild() {
+                    buildTarget = buildFlavour
+                    yamlExtFileLocation = "../neo-mtaext.yaml"
+                }
+            }
+            unstash "mtar"
+            parallel(
+                    'Deploy MTA Feature to Canary Dev - Test': {
+                        neoDeploy script: this, archivePath: solutionMtar, neoCredentialsId: credId, account: canaryTestAccount, host: canaryTestHost
+                    },
+                    'Deploy MTA Feature Destination to Canary Dev - Test': {
+                        neoDeploy script: this, archivePath: solutionDestinationMtar, neoCredentialsId: credId, account: canaryTestAccount, host: canaryTestHost
+                    },
+                    'Deploy MTA Feature to Factory - Test': {
+                        neoDeploy script: this, archivePath: solutionMtar, neoCredentialsId: credId, account: factoryTestAccount, host: factoryTestHost
+                    },
+                    'Deploy MTA Feature Destination to Factory - Test': {
+                        neoDeploy script: this, archivePath: solutionDestinationMtar, neoCredentialsId: credId, account: factoryTestAccount, host: factoryTestHost
+                    }
+            )
+        }
+    }
+
+    stage("Run Selenium Tests on Canary Account") {
+        seleniumPodTemplate {
+            checkout scm
+            sh """
+               HOME=${pwd()}
+               cd client
+               npm install
+               host=$WEBIDE_HOST_ON_CANARY_ACCOUNT npm run test:build:it
+               host=$WEBIDE_HOST_ON_CANARY_ACCOUNT npm run test:editor:it
+            """
+        }
+    }
+
+/*
+  Enable it when we don't have change in webIDE API
+    stage("Run Selenium Tests on Factory Account") {
+        seleniumPodTemplate {
+            checkout scm
+            sh """
+               HOME=${pwd()}
+               cd client
+               npm install
+//               npm run test:build:it //IMPORTANT: This test shold be activate when we will deploy WebiIDE with "mo"
+               host=$WEBIDE_HOST_ON_FACTORY_ACCOUNT npm run test:editor:it
+            """
+        }
+
+    }
+*/
+    stage("Deploy to NEO Canary Dev") {
+        devxPodTemplate() {
+            checkout scm
+            def githubOrgName = globalPipelineEnvironment.getConfigProperty('githubOrgName');
+            def githubRepoName = globalPipelineEnvironment.getConfigProperty('githubRepoName');
+            setupPipelineEnvironment script: this, githubOrg: githubOrgName, githubRepo: githubRepoName, gitBranch: env.BRANCH_NAME
+            def solutionName = globalPipelineEnvironment.getConfigProperty('solutionName');
+            def solutionMtar = solutionName + ".mtar"
+            def solutionDestinationMtar = "destination/" + solutionName + ".destination.mtar"
+            def credId = globalPipelineEnvironment.getConfigProperty('credentialsId')
+            def buildFlavour = globalPipelineEnvironment.getConfigProperty('buildFlavour')
+            def canaryRotHost = globalPipelineEnvironment.getConfigProperty('canaryRotHost')
+            def canaryRotAccount = globalPipelineEnvironment.getConfigProperty('canaryRotAccount')
+            def canaryFrankfurtHost = globalPipelineEnvironment.getConfigProperty('canaryFrankfurtHost')
+            def canaryFrankfurtAccount = globalPipelineEnvironment.getConfigProperty('canaryFrankfurtAccount')
+            dir('destination') {
+                executeMtaBuild() {
+                    buildTarget = buildFlavour
+                    yamlExtFileLocation = "../neo-mtaext.yaml"
+                }
+            }
+            unstash "mtar"
+            parallel(
+                    'Deploy Feature to Canary Dev - Rot': {
+                        neoDeploy script: this, archivePath: solutionMtar, neoCredentialsId: credId, account: canaryRotAccount, host: canaryRotHost
+                    },
+                    'Deploy Feature Destination to Canary Dev - Rot': {
+                        neoDeploy script: this, archivePath: solutionDestinationMtar, neoCredentialsId: credId, account: canaryRotAccount, host: canaryRotHost
+                    },
+                    'Deploy Feature to Canary Dev - Frankfurt': {
+                        neoDeploy script: this, archivePath: solutionMtar, neoCredentialsId: credId, account: canaryFrankfurtAccount, host: canaryFrankfurtHost
+                    },
+                    'Deploy Feature Destination to Canary Dev - Frankfurt': {
+                        neoDeploy script: this, archivePath: solutionDestinationMtar, neoCredentialsId: credId, account: canaryFrankfurtAccount, host: canaryFrankfurtHost
+                    }
+            )
+        }
+    }
+
+    stage("Release NEO artifact to Nexus") {
+      buildFeatureByTarget('NEO');
+    }
+
+    stage("Release XSA artifact to Nexus") {
+      buildFeatureByTarget('XSA');
+    }
+
+} catch(Exception error) {
+    def githubRepoName = globalPipelineEnvironment.getConfigProperty('githubRepoName');
+    mail body: """The CI process for """+githubRepoName+""" is failing and requires your attention.
+    Regards,
+    FMS JaaS Server""".stripIndent().trim(), subject: githubRepoName+' CI process has failed!', to: 'DL_58FDEC017BCF846942000252@exchange.sap.corp'
+    throw error;
+}

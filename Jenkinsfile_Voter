@@ -1,0 +1,55 @@
+@Library(['features-pipeline-lib', 'piper-lib', 'piper-lib-os@857bd2794a29f8a0caa2ba3910a4ab72d042e36d']) _
+
+stage("Run tests") {
+    parallel(
+        'Whitesource_scan': {
+            node {
+                timestamps {
+                    ansiColor('xterm') {
+                        checkout scm
+                        dir('client') {
+                            executeWhitesourceScan script: this, scanType: 'npm', whitesourceUserTokenCredentialsId: 'whitesourceUserToken'
+                        }
+                    }
+                }
+            }
+        },
+        'MTA_Feature_Build': {
+            devxPodTemplate() {
+                checkout scm
+                setupPipelineEnvironment script: this, githubOrg: 'DevX', githubRepo: 'webide-mta-feature', gitBranch: env.BRANCH_NAME
+                def buildFlavour = globalPipelineEnvironment.getConfigProperty('buildFlavour')
+                def mtarFileName
+                try {
+                    mtarFileName = executeMtaBuild() {
+                        buildTarget = buildFlavour
+                    }
+                    sh '''
+                        cd client
+                        npm install
+                        npm run test
+                    '''
+                } finally {
+                    stash name: "mtar", includes: mtarFileName
+                    stash name: "coverage", includes: 'client/coverage/**/lcov.info'
+
+                    junit testDataPublishers: [[$class: 'AttachmentPublisher'], [$class: 'StabilityTestDataPublisher']], testResults: 'client/**/*TEST-*.xml';
+                    archive "**/*TEST-*.xml, client/coverage/webide-mta-feature/index.html";
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'client/coverage/webide-mta-feature', reportFiles: 'index.html', reportName: 'Code Coverage', reportTitles: '']);
+                }
+            }
+        }
+    )
+}
+
+/*stage("Run Local Selenium Tests") {
+        seleniumPodTemplate {
+            checkout scm
+            sh """
+               HOME=${pwd()}
+               cd client
+               npm install
+               npm run run_selenium_local
+            """
+        }
+    }*/

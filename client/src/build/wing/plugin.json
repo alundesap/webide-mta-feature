@@ -1,0 +1,53 @@
+{
+  "name": "sap.watt.mta.build.wing.provider",
+  "description": "A plugin providing commands used for the MTA project on Che 6.",
+  "isAvailable": {
+    "toggle": "wing"
+  },
+  "i18n": "sap.watt.mta.build.wing.provider/i18n/i18n",
+  "requires": {
+    "services": [
+      "command",
+      "commandGroup",
+      "log",
+      "task",
+      "selection",
+      "chebackend.hybridBuildService",
+      "projectType",
+      "filesystem.documentProvider",
+      "git"
+    ]
+  },
+  "provides": {
+    "services": {
+      "mta.buildprovider": {
+        "implements": "sap.mta.wing.provider.service.build.MtaBuildTaskProvider",
+        "module": "sap.watt.mta.build.wing.provider/service/MtaBuildTaskProvider"
+      }
+    },
+    "interfaces": {
+      "sap.mta.wing.provider.service.build.MtaBuildTaskProvider": "sap.watt.mta.build.wing.provider/service/MtaBuildTaskProvider"
+    }
+  },
+  "configures": {
+    "services": {
+      "command:commands": [
+        {
+          "id": "build.command.execute.mta",
+          "label": "{i18n>mta.buildprovider.build.command.text}",
+          "service": "sap.watt.mta.build.wing.provider/command/MtaBuildCommand",
+          "enabled": true
+        }
+      ],
+      "commandGroup:items": [
+        {
+          "parent": "build",
+          "command": "build.command.execute.mta"
+        }
+      ],
+      "git:ignore": [
+        "/mta_archives/"
+      ]
+    }
+  }
+}

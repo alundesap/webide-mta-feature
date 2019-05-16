@@ -1,0 +1,21 @@
+{
+	"name": "sap.watt.saptoolsets.common.mtayaml.service.MtaYaml",
+	"description": "The Mta Yaml editor interface",
+	"extends": [
+		"sap.watt.common.service.editor.Editor"
+	],
+
+	"configurationProperties": {
+		"repositoryBrowserExtensionFilters": {
+			"type": "[string]",
+			"multiple": false
+		},
+		"tabs": {
+			"type": {
+				"tabName": "string", 
+				"viewName": "string"
+			},
+			"multiple": true
+		}
+	}
+}

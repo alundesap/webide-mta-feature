@@ -1,0 +1,28 @@
+_schema-version: "2.0.0"
+ID: com.sap.webide.mta
+version: 1.0.0
+
+modules:
+  - name: webide-mta-feature
+    type: html5
+    path: public
+    provides:
+      - name: webide-mta-feature
+        public: true
+    build-parameters:
+      builder: npm
+      build-result: "dist"
+      timeout: 15m
+      requires:
+        - name: webide-mta-client
+          artifacts: ["dist/*"]
+          target-path: "dist_client_tmp"
+
+  - name: webide-mta-client
+    type: html5
+    path: client
+    build-parameters:
+      builder: npm
+      supported-platforms: []
+
+

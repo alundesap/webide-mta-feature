@@ -1,0 +1,135 @@
+<mvc:View controllerName="sap.watt.saptoolsets.common.mtayaml.ui.MtaYamlGeneralTab"
+          xmlns:mvc="sap.ui.core.mvc"
+          xmlns:layout="sap.ui.layout"
+          xmlns="sap.m"
+          xmlns:common="sap.ui.commons"
+          xmlns:form="sap.ui.layout.form"
+          xmlns:core="sap.ui.core">
+    <layout:Grid>
+        <layout:content>
+            <form:Form>
+                <form:formContainers>
+                    <form:FormContainer id="mtaYaml-settings">
+                        <form:formElements>
+                            <!--ID-->
+                            <form:FormElement>
+                                <form:label>
+                                    <Label text="{i18n>MtaYaml_General_ID}" required="true">
+                                        <layoutData>
+                                            <layout:GridData linebreak="true" span="L3 M3 S4"/>
+                                        </layoutData>
+                                    </Label>
+                                </form:label>
+                                <form:fields>
+	                               	 <Input id="mtaYamlGeneralTabIdField" value="{/ID}" liveChange="idValueValidation" valueLiveUpdate="true">
+                                        <layoutData>
+                                            <layout:GridData span="L6 M6 S8"/>
+                                        </layoutData>
+                                    </Input>
+                                </form:fields>
+                            </form:FormElement>
+                            <!--Application Version-->
+                            <form:FormElement>
+                                <form:label>
+                                    <Label text="{i18n>MtaYaml_General_Version}" required="true">
+                                        <layoutData>
+                                            <layout:GridData linebreak="true" span="L3 M3 S4"/>
+                                        </layoutData>
+                                    </Label>
+                                </form:label>
+                                <form:fields>
+                                    <Input id="mtaYamlGeneralTabVersionField" value="{/version}" valueLiveUpdate="true">
+                                        <layoutData>
+                                            <layout:GridData span="L6 M6 S8"/>
+                                        </layoutData>
+                                    </Input>
+                                </form:fields>
+                            </form:FormElement>
+                           <!--Description-->
+                            <form:FormElement>
+                                <form:label>
+                                    <Label text="{i18n>MtaYaml_General_Description}">
+                                        <layoutData>
+                                            <layout:GridData linebreak="true" span="L3 M3 S4"/>
+                                        </layoutData>
+                                    </Label>
+                                </form:label>
+                                <form:fields>
+                                    <Input id="mtaYamlGeneralTabDescriptionField" value="{/description}" valueLiveUpdate="true">
+                                        <layoutData>
+                                            <layout:GridData span="L6 M6 S8"/>
+                                        </layoutData>
+                                    </Input>
+                                </form:fields>
+                            </form:FormElement>
+                            <!--Provider-->
+                            <form:FormElement>
+                                <form:label>
+                                    <Label text="{i18n>MtaYaml_General_Provider}">
+                                        <layoutData>
+                                            <layout:GridData linebreak="true" span="L3 M3 S4"/>
+                                        </layoutData>
+                                    </Label>
+                                </form:label>
+                                <form:fields>
+                                    <Input id="mtaYamlGeneralTabProviderField" value="{/provider}" valueLiveUpdate="true">
+                                        <layoutData>
+                                            <layout:GridData span="L6 M6 S8"/>
+                                        </layoutData>
+                                    </Input>
+                                </form:fields>
+                            </form:FormElement>
+                            <!--Copyright-->
+                            <form:FormElement>
+                                <form:label>
+                                    <Label text="{i18n>MtaYaml_General_Copyright}">
+                                        <layoutData>
+                                            <layout:GridData linebreak="true" span="L3 M3 S4"/>
+                                        </layoutData>
+                                    </Label>
+                                </form:label>
+                                <form:fields>
+                                    <Input id="mtaYamlGeneralTabCopyrightField" value="{/copyright}" valueLiveUpdate="true">
+                                        <layoutData>
+                                            <layout:GridData span="L6 M6 S8"/>
+                                        </layoutData>
+                                    </Input>
+                                </form:fields>
+                            </form:FormElement>
+                            <!--SchemaVersion-->
+                            <form:FormElement>
+                                <form:label>
+                                    <Label text="{i18n>MtaYaml_General_SchemaVersion}">
+                                        <layoutData>
+                                            <layout:GridData linebreak="true" span="L3 M3 S4"/>
+                                        </layoutData>
+                                    </Label>
+                                </form:label>
+                                <form:fields>
+                                	<Label text="{/_schema-version}">
+                                        <layoutData>
+                                            <layout:GridData span="L6 M6 S8"/>
+                                        </layoutData>
+                                    </Label>
+                                </form:fields>
+                            </form:FormElement>
+                        </form:formElements>
+                        <form:title>
+                            <core:Title design="Bold" text=""></core:Title>
+                        </form:title>
+                    </form:FormContainer>
+                </form:formContainers>
+                <form:layout>
+                    <form:ResponsiveGridLayout></form:ResponsiveGridLayout>
+                </form:layout>
+                <!-- the size of the form in the grid-->
+                <form:layoutData>
+                    <layout:GridData span="L9 M9 S10"/>
+                </form:layoutData>
+            </form:Form>
+        </layout:content>
+        <layout:layoutData>
+            <layout:GridData span="L9 M9 S10"/>
+        </layout:layoutData>
+    </layout:Grid>
+</mvc:View>

@@ -1,0 +1,356 @@
+<mvc:View controllerName="sap.watt.saptoolsets.common.mtayaml.ui.MtaYamlModulesTab" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc"
+	xmlns:layout="sap.ui.layout" xmlns:common="sap.ui.commons" xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core"
+	xmlns:table="sap.ui.table" xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" height="100%" displayBlock="true">
+	<SplitContainer id="ModulesSplitContainer" initialDetail="ModulesDetailPage" initialMaster="ModulesMasterPage" mode="StretchCompressMode">
+		<masterPages>
+			<Page id="ModulesMasterPage" title="" icon="sap-icon://action" showHeader="false" class="sapUiStdPage">
+				<content>
+					<List noDataText="" id="mtaYamlListModules" width="100%" mode="SingleSelectMaster" items="{/modules}" itemPress="" selectedItem=""
+						selectionChange="onModuleSelectionChange" class="sapWattMListWithBorder">
+						<StandardListItem id="mtaYamlModulesListItem" type="Active" title="{name}" description="{type}"
+							icon="{path:'type', formatter:'.getModuleIcon'}"/>
+					</List>
+				</content>
+			</Page>
+		</masterPages>
+		<detailPages>
+			<Page id="ModulesDetailPage" backgroundDesign="Transparent" showHeader="false" class="sapUiStdPage">
+				<content>
+					<ObjectHeader title="{name}" introActive="false" titleActive="false" id="modulesDetailHeader"
+						icon="{path:'type', formatter:'.getModuleIcon'}"/>
+					<layout:Grid class="mtaYamlForm">
+						<layout:layoutData>
+							<layout:GridData span="L12 M12 S12"/>
+						</layout:layoutData>
+						<Label text="{i18n>MtaYaml_Modules_Name}">
+							<layoutData>
+								<layout:GridData span="XL1 L2 M2 S6"/>
+							</layoutData>
+						</Label>
+						<Label text="{name}">
+							<layoutData>
+								<layout:GridData span="XL5 L4 M4 S6"/>
+							</layoutData>
+						</Label>
+						<Label text="{i18n>MtaYaml_Modules_Type}">
+							<layoutData>
+								<layout:GridData span="XL1 L2 M2 S6"/>
+							</layoutData>
+						</Label>
+						<Label text="{type}">
+							<layoutData>
+								<layout:GridData span="XL5 L4 M4 S6"/>
+							</layoutData>
+						</Label>
+						<Label text="{i18n>MtaYaml_Modules_Path}">
+							<layoutData>
+								<layout:GridData span="XL1 L2 M2 S6"/>
+							</layoutData>
+						</Label>
+						<Label text="{path}">
+							<layoutData>
+								<layout:GridData span="XL5 L4 M4 S6"/>
+							</layoutData>
+						</Label>
+						<Label text="{i18n>MtaYaml_Modules_Desc}">
+							<layoutData>
+								<layout:GridData span="XL1 L1 M2 S6"/>
+							</layoutData>
+						</Label>
+						<TextArea id="mtaYamlModulesBasicInfoDescriptionTextArea" value="{description}" valueLiveUpdate="true" width="100%">
+							<layoutData>
+								<layout:GridData span="XL5 L5 M4 S6"/>
+							</layoutData>
+						</TextArea>
+					</layout:Grid>
+					<!--Properties-->
+					<Panel id="mtaYamlPanelProperties" expandable="true" expanded="true" headerText="{i18n>MtaYaml_Modules_Properties}"
+						backgroundDesign="Transparent" width="100%">
+						<content>
+							<table:Table id="mtaModulePropertiesTable" rows="{properties}" visibleRowCount="3" app:location="property" selectionMode="Single"
+								selectionBehavior="RowOnly">
+								<table:toolbar>
+									<Toolbar>
+										<Title text=""/>
+										<ToolbarSpacer/>
+										<Button id="mtaYamlModulesPropertiesAddButton" icon="sap-icon://add" press="onTableAddPress" class="sapWattYamlTableToolbarButton"
+											tooltip="{i18n>MtaYaml_Add}"/>
+										<Button id="mtaYamlModulesPropertiesDeleteButton" icon="sap-icon://delete" press="onTableRemovePress" class="sapWattYamlTableToolbarButton"
+											tooltip="{i18n>MtaYaml_Remove}" enabled="{=!!${properties}}"/>
+									</Toolbar>
+								</table:toolbar>
+								<table:columns>
+									<table:Column>
+										<Label text="Key"/>
+										<table:template>
+											<Input id="mtaYamlModulesPropertiesKeyInput" valueState="{path: 'key', formatter:'.valueStateFormatterProperties'}" value="{key}"/>
+										</table:template>
+									</table:Column>
+									<table:Column>
+										<Label text="Value"/>
+										<table:template>
+											<Input id="mtaYamlModulesPropertiesValueInput" editable="{editable}" value="{displayedValue}" valueLiveUpdate="true"/>
+										</table:template>
+									</table:Column>
+								</table:columns>
+							</table:Table>
+						</content>
+						<layoutData>
+							<layout:GridData span="L12 M12 S12"/>
+						</layoutData>
+					</Panel>
+					<!--Requires-->
+					<Panel id="mtaYamlPanelRequires" expandable="true" expanded="true" headerText="{i18n>MtaYaml_Modules_Requires}"
+						backgroundDesign="Transparent" width="100%">
+						<content>
+							<layout:Grid>
+								<table:Table id="MtaRequiresTableKey" title="" selectionMode="Single" selectionBehavior="RowOnly" rows="{requires}"
+									rowSelectionChange="onRequiresSelectionChange" visibleRowCount="3" app:location="requires">
+									<table:toolbar>
+										<Toolbar>
+											<ToolbarSpacer/>
+											<Button id="mtaYamlModulesRequiresAddButton" icon="sap-icon://add" press="onTableAddPress" class="sapWattYamlTableToolbarButton"
+												tooltip="{i18n>MtaYaml_Add}"/>
+											<Button id="mtaYamlModulesRequiresDeleteButton" icon="sap-icon://delete" press="onRequiresTableRemovePress"
+												class="sapWattYamlTableToolbarButton" tooltip="{i18n>MtaYaml_Remove}" enabled="{=!!${requires}}"/>
+										</Toolbar>
+									</table:toolbar>
+									<table:columns>
+										<table:Column width="70%">
+											<Label text="Name"/>
+											<table:template>
+												<common:DropdownBox id="mtaYamlModulesRequiresNameInput" items="{ItemsModel>/aRequires}" selectedKey="{name}"
+													liveChange="limitSizeAndNameValueValidation" width="100%">
+													<common:items>
+														<core:ListItem key="{ItemsModel>key}" text="{ItemsModel>key} ({ItemsModel>type})"></core:ListItem>
+													</common:items>
+												</common:DropdownBox>
+											</table:template>
+										</table:Column>
+										<table:Column width="30%">
+											<Label text="Group"/>
+											<table:template>
+												<Input id="mtaYamlModulesRequiresGroupInput" value="{group}" valueLiveUpdate="true"/>
+											</table:template>
+										</table:Column>
+									</table:columns>
+									<table:layoutData>
+										<layout:GridData span="L6 M6 S6"/>
+									</table:layoutData>
+								</table:Table>
+								<table:Table id="MtaRequiresTableProps" title="" visibleRowCount="3" app:location="property" selectionMode="Single"
+									selectionBehavior="RowOnly">
+									<table:toolbar>
+										<Toolbar>
+											<Title text="{i18n>MtaYaml_Modules_PropertiesOf} {name}" titleStyle="H5"/>
+											<ToolbarSpacer/>
+											<Button id="mtaYamlModulesRequiresPropAddButton" icon="sap-icon://add" press="onTableAddPress" class="sapWattYamlTableToolbarButton"
+												tooltip="{i18n>MtaYaml_Add}"/>
+											<Button id="mtaYamlModulesRequiresPropDeleteButton" icon="sap-icon://delete" press="onTableRemovePress"
+												class="sapWattYamlTableToolbarButton" tooltip="{i18n>MtaYaml_Remove}" enabled="{=!!${properties}}"/>
+										</Toolbar>
+									</table:toolbar>
+									<table:columns>
+										<table:Column>
+											<Label text="Key"/>
+											<table:template>
+												<Input id="mtaYamlModulesRequiresPropKeyInput" valueState="{path: 'key', formatter:'.valueStateFormatter'}" value="{key}"/>
+											</table:template>
+										</table:Column>
+										<table:Column>
+											<Label text="Value"/>
+											<table:template>
+												<Input id="mtaYamlModulesRequiresPropValueInput" editable="{editable}" value="{displayedValue}" valueLiveUpdate="true"/>
+											</table:template>
+										</table:Column>
+									</table:columns>
+									<table:layoutData>
+										<layout:GridData span="L6 M6 S6"/>
+									</table:layoutData>
+								</table:Table>
+								<table:Table id="MtaRequiresTableParams" title="" visibleRowCount="3" app:location="property" selectionMode="Single"
+									selectionBehavior="RowOnly">
+									<table:toolbar>
+										<Toolbar>
+											<Title text="{i18n>MtaYaml_Modules_ParametersOf} {name}" titleStyle="H5"/>
+											<ToolbarSpacer/>
+											<Button id="mtaYamlModulesRequiresParamAddButton" icon="sap-icon://add" press="onTableAddPress" class="sapWattYamlTableToolbarButton"
+												tooltip="{i18n>MtaYaml_Add}"/>
+											<Button id="mtaYamlModulesRequiresParamDeleteButton" icon="sap-icon://delete" press="onTableRemovePress"
+												class="sapWattYamlTableToolbarButton" tooltip="{i18n>MtaYaml_Remove}" enabled="{=!!${parameters}}"/>
+										</Toolbar>
+									</table:toolbar>
+									<table:columns>
+										<table:Column>
+											<Label text="Key"/>
+											<table:template>
+												<Input id="mtaYamlModulesRequiresParamKeyInput" valueState="{path: 'key', formatter:'.valueStateFormatter'}" value="{key}"/>
+											</table:template>
+										</table:Column>
+										<table:Column>
+											<Label text="Value"/>
+											<table:template>
+												<Input id="mtaYamlModulesRequiresParamValueInput" editable="{editable}" value="{displayedValue}" valueLiveUpdate="true"/>
+											</table:template>
+										</table:Column>
+									</table:columns>
+									<table:layoutData>
+										<layout:GridData indent="L6 M6 S6" span="L6 M6 S6"/>
+									</table:layoutData>
+								</table:Table>
+							</layout:Grid>
+						</content>
+						<layoutData>
+							<layout:GridData span="L12 M12 S12"/>
+						</layoutData>
+					</Panel>
+					<!--Provides-->
+					<Panel id="mtaYamlPanelProvides" expandable="true" expanded="true" headerText="{i18n>MtaYaml_Modules_Provides}"
+						backgroundDesign="Transparent" width="100%">
+						<content>
+							<layout:Grid>
+								<table:Table id="MtaProvidesTableKey" rows="{provides}" rowSelectionChange="onProvidesSelectionChange" selectionMode="Single"
+									selectionBehavior="RowOnly" visibleRowCount="3" app:location="root">
+									<table:toolbar>
+										<Toolbar>
+											<Title text=""/>
+											<ToolbarSpacer/>
+											<Button id="mtaYamlModulesProvidesAddButoon" icon="sap-icon://add" press="onTableAddPress" class="sapWattYamlTableToolbarButton"
+												tooltip="{i18n>MtaYaml_Add}"/>
+											<Button id="mtaYamlModulesProvidesDeleteButoon" icon="sap-icon://delete" press="onProvidesTableRemovePress"
+												class="sapWattYamlTableToolbarButton" tooltip="{i18n>MtaYaml_Remove}" enabled="{=!!${provides}}"/>
+										</Toolbar>
+									</table:toolbar>
+									<table:columns>
+										<table:Column>
+											<Label text="Name"/>
+											<table:template>
+												<Input id="mtaYamlModulesProvidesNameInput" liveChange="keyCrossValidation" value="{name}"/>
+											</table:template>
+										</table:Column>
+									</table:columns>
+									<table:layoutData>
+										<layout:GridData span="L6 M6 S6"/>
+									</table:layoutData>
+								</table:Table>
+								<table:Table id="MtaProvidesTable" visibleRowCount="3" app:location="property" selectionMode="Single" selectionBehavior="RowOnly">
+									<table:toolbar>
+										<Toolbar>
+											<Title text="{i18n>MtaYaml_Modules_PropertiesOf} {name}" titleStyle="H5"/>
+											<ToolbarSpacer/>
+											<Button id="mtaYamlModulesProvidesPropAddButton" icon="sap-icon://add" press="onTableAddPress" class="sapWattYamlTableToolbarButton"
+												tooltip="{i18n>MtaYaml_Add}"/>
+											<Button id="mtaYamlModulesProvidesPropDeleteButton" icon="sap-icon://delete" press="onTableRemovePress"
+												class="sapWattYamlTableToolbarButton" tooltip="{i18n>MtaYaml_Remove}" enabled="{=!!${properties}}"/>
+										</Toolbar>
+									</table:toolbar>
+									<table:columns>
+										<table:Column>
+											<Label text="Key"/>
+											<table:template>
+												<Input id="mtaYamlModulesProvidesPropKeyInput" value="{key}" valueState="{path: 'key', formatter:'.valueStateFormatter'}" />
+											</table:template>
+										</table:Column>
+										<table:Column>
+											<Label text="Value"/>
+											<table:template>
+												<Input id="mtaYamlModulesProvidesPropValueInput" editable="{editable}" value="{displayedValue}" valueLiveUpdate="true"/>
+											</table:template>
+										</table:Column>
+									</table:columns>
+									<table:layoutData>
+										<layout:GridData span="L6 M6 S6"/>
+									</table:layoutData>
+								</table:Table>
+							</layout:Grid>
+						</content>
+						<layoutData>
+							<layout:GridData span="L12 M12 S12"/>
+						</layoutData>
+					</Panel>
+					<!--Parameters-->
+					<Panel id="mtaYamlPanelParameters" expandable="true" expanded="true" headerText="{i18n>MtaYaml_Modules_Parameters}"
+						backgroundDesign="Transparent" width="100%">
+						<content>
+							<table:Table id="mtaModuleParametersTable" rows="{parameters}" visibleRowCount="3" app:location="property" selectionMode="Single"
+								selectionBehavior="RowOnly">
+								<table:toolbar>
+									<Toolbar>
+										<Title text=""/>
+										<ToolbarSpacer/>
+										<Button id="mtaYamlModulesParametersAddButton" icon="sap-icon://add" press="onTableAddPress" class="sapWattYamlTableToolbarButton"
+											tooltip="{i18n>MtaYaml_Add}"/>
+										<Button id="mtaYamlModulesParametersDeleteButton" icon="sap-icon://delete" press="onTableRemovePress" class="sapWattYamlTableToolbarButton"
+											tooltip="{i18n>MtaYaml_Remove}" enabled="{=!!${parameters}}"/>
+									</Toolbar>
+								</table:toolbar>
+								<table:columns>
+									<table:Column>
+										<Label text="Key"/>
+										<table:template>
+											<Input id="mtaYamlModulesParametersKeyInput" type="Text" showValueHelp="true" value="{key}" valueHelpRequest="onValueHelpRequest"
+												valueState="{path: 'key', formatter:'.valueStateFormatterParameters'}" suggestionItems="{ItemsModel>/aModuleParameters}" showSuggestion="true" width="100%">
+												<!--change="keyValidation"-->
+												<suggestionItems>
+													<core:Item key="{ItemsModel>name}" text="{ItemsModel>name}"></core:Item>
+												</suggestionItems>
+												<layoutData>
+													<layout:GridData span="L4 M4 S8"/>
+												</layoutData>
+											</Input>
+										</table:template>
+									</table:Column>
+									<table:Column>
+										<Label text="Value"/>
+										<table:template>
+											<Input id="mtaYamlModulesParametersValueInput" editable="{editable}" value="{displayedValue}" valueLiveUpdate="true"/>
+										</table:template>
+									</table:Column>
+								</table:columns>
+							</table:Table>
+						</content>
+						<layoutData>
+							<layout:GridData span="L12 M12 S12"/>
+						</layoutData>
+					</Panel>
+					<!--Build Parameters-->
+					<Panel id="mtaYamlPanelBuildParameters" expandable="true" expanded="true" headerText="{i18n>MtaYaml_Modules_BuildParameters}"
+						backgroundDesign="Transparent" width="100%">
+						<content>
+							<table:Table id="MtaBuildParametersTable" rows="{build-parameters}" visibleRowCount="3" app:location="property" selectionMode="Single"
+								selectionBehavior="RowOnly">
+								<table:toolbar>
+									<Toolbar>
+										<Title text=""/>
+										<ToolbarSpacer/>
+										<Button id="mtaYamlModulesBuildParamAddButton" icon="sap-icon://add" press="onTableAddPress" class="sapWattYamlTableToolbarButton"
+											tooltip="{i18n>MtaYaml_Add}"/>
+										<Button id="mtaYamlModulesBuildParamDeleteButton" icon="sap-icon://delete" press="onTableRemovePress" class="sapWattYamlTableToolbarButton"
+											tooltip="{i18n>MtaYaml_Remove}" enabled="{=!!${build-parameters}}"/>
+									</Toolbar>
+								</table:toolbar>
+								<table:columns>
+									<table:Column>
+										<Label text="Key"/>
+										<table:template>
+											<Input id="mtaYamlModulesBuildParamKeyInput" valueState="{path: 'key', formatter:'.valueStateFormatterBuildParam'}" value="{key}"/>
+										</table:template>
+									</table:Column>
+									<table:Column>
+										<Label text="Value"/>
+										<table:template>
+											<Input id="mtaYamlModulesBuildParamValueInput" editable="{editable}" value="{displayedValue}" valueLiveUpdate="true"/>
+										</table:template>
+									</table:Column>
+								</table:columns>
+							</table:Table>
+						</content>
+						<layoutData>
+							<layout:GridData span="L12 M12 S12"/>
+						</layoutData>
+					</Panel>
+				</content>
+			</Page>
+		</detailPages>
+	</SplitContainer>
+</mvc:View>

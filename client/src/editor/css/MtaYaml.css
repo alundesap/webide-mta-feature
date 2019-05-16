@@ -1,0 +1,15 @@
+.mtayamlTabs .sapMILI .sapMILIDiv {
+  margin: 0;
+}
+
+.mtayamlTabs .sapMILI.sapMLIB {
+  padding: 0;
+}
+
+.mtayamlTabs_comboBox {
+  max-height: 10rem;
+}
+
+.mtaYamlForm{
+  padding-left: 1rem;
+}

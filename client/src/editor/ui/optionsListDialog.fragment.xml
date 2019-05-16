@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<SelectDialog id="mtaYamlInputHelpDialog" class="sapUiPopupWithPadding" items="{ItemsModel>/listItems}"
+				  contentHeight="300px" search="onValueHelpSearch"
+				  confirm="onValueHelpClose" cancel="onValueHelpClose">
+		<StandardListItem id="mtaYamlInputHelpDialogListItem" title="{ItemsModel>name}"/>
+	</SelectDialog>
+</core:FragmentDefinition>

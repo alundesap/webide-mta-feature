@@ -1,0 +1,14 @@
+_schema-version: "3.1.0"
+ID: com.sap.webide.mta.hcp
+extends: com.sap.webide.mta
+
+modules:
+  - name: webide-mta-feature
+    build-parameters:
+      npm-opts:
+        flavor: neo
+    parameters:
+      version: 1.0.3-${timestamp}
+      name: webidemta
+      display-name: Web IDE MTA feature
+      active: true

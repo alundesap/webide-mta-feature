@@ -1,0 +1,20 @@
+_schema-version: "2.0.0"
+ID: com.sap.webide.mta.destination
+version: 0.0.4
+
+modules:
+  - name: webidemta
+    path: .
+    type: com.sap.hcp.destination
+    parameters:
+      name: webidemta
+      description: Destination for discovery of Web IDE MTA feature
+      url: https://webidemta-xg98ih1clz.dispatcher.int.sap.hana.ondemand.com
+      type: HTTP
+      proxy-type: Internet
+      authentication: NoAuthentication
+      additional-properties:
+        WebIDEUsage: feature,enabled_by_default_feature
+        WebIDEEnabled: true
+    build-parameters:
+      ignore: ["*.sh"]

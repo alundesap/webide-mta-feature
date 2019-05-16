@@ -1,0 +1,15 @@
+_schema-version: "3.1.0"
+ID: com.sap.webide.mta.xsa
+extends: com.sap.webide.mta
+
+modules:
+  - name: webide-mta-feature
+    properties:
+      httpHeaders:
+        - "Access-Control-Allow-Origin": "*"
+    provides:
+      - name: webidemta
+        properties:
+          purpose: CloudIDEExtension
+          display_name: ${timestamp}
+          url: ${default-url}
